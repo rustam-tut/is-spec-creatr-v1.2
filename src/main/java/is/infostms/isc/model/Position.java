@@ -25,16 +25,17 @@ public class Position {
 
     private Double price;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Position p = (Position) o;
-//
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, fullName, brand, article, srcAmount, price);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position p = (Position) o;
+        return p.getArticle().equals(getArticle()) & p.fullName.equals(fullName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullName, article);
+    }
 }
