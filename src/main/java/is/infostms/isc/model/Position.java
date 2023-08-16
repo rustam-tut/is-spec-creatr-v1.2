@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +24,17 @@ public class Position {
     private Double srcAmount;
 
     private Double price;
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Position p = (Position) o;
+//
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, fullName, brand, article, srcAmount, price);
+//    }
 }

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import static is.infostms.isc.parser.PositionParserXLSColumnNames.*;
 
@@ -118,7 +119,7 @@ public class PositionParserXLS extends PositionParser{
             if (row == null) continue;
             for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
                 Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
-                if (cell == null || !(cell.getCellType() == Cell.CELL_TYPE_STRING)) continue;
+                if (cell == null || cell.getCellType() != Cell.CELL_TYPE_STRING) continue;
                 String colName = cell.getStringCellValue().toLowerCase().trim();
                 if (colNames.contains(colName)) {
                     columnNameToNumMap.put(colName, new int[]{i, j});
