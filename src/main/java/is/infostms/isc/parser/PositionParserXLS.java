@@ -53,6 +53,7 @@ public class PositionParserXLS extends PositionParser{
     private List<Position> parseSheet(int sheetNum) {
         Sheet sheet = workbook.getSheetAt(sheetNum);
         Map<String, int[]> colNames = createColumnNameToNumMap(sheet);
+        System.out.println(colNames);
         if (colNames == null) {
             return null;
         }
@@ -75,12 +76,13 @@ public class PositionParserXLS extends PositionParser{
                 Cell cell = row.getCell(pair.getKey(), Row.RETURN_BLANK_AS_NULL);
                 if (cell == null) continue;
                 Double value = null;
-                if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                int cellType = cell.getCellType();
+                if (cellType == Cell.CELL_TYPE_STRING) {
                     String preValue = cell.getStringCellValue().trim().replaceAll("[^0-9]", "");
                     if (!preValue.isEmpty()) {
                         value = Double.parseDouble(preValue);
                     }
-                } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                } else if (cellType == Cell.CELL_TYPE_NUMERIC || cellType == Cell.CELL_TYPE_FORMULA) {
                     value = cell.getNumericCellValue();
                 }
                 positionBuilder.with(pair.getValue(), value);
@@ -120,7 +122,7 @@ public class PositionParserXLS extends PositionParser{
             for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
                 Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
                 if (cell == null || cell.getCellType() != Cell.CELL_TYPE_STRING) continue;
-                String colName = cell.getStringCellValue().toLowerCase().trim();
+                String colName = cell.getStringCellValue().toLowerCase().trim().replaceAll("\\s{2,}", "\\s");
                 if (colNames.contains(colName)) {
                     columnNameToNumMap.put(colName, new int[]{i, j});
                 }

@@ -6,38 +6,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PositionHandler {
+public class PositionsHandler {
 
     private final List<Position> positions;
 
     private Map<Position, Double> positionsAmount;
 
-    private PositionHandler(List<Position> positions) {
+    public static PositionsHandler of(List<Position> positions) {
+        return new PositionsHandler(positions);
+    }
+
+    private PositionsHandler(List<Position> positions) {
         this.positions = positions;
     }
 
-    public static PositionHandler of(List<Position> positions) {
-        return new PositionHandler(positions);
+    public PositionsHandler clean() {
+        return this;
     }
-
-    public PositionHandler groupToMap() {
+    public PositionsHandler group() {
         positionsAmount = new HashMap<>(positions.size(), 0.9f);
         positions.forEach(pos -> {
-            Double d;
-            if ((d = positionsAmount.get(pos)) == null) {
+            Double am;
+            if ((am = positionsAmount.get(pos)) == null) {
                 positionsAmount.put(pos, pos.getSrcAmount());
             } else {
-                // TODo
+                positionsAmount.put(pos, pos.getSrcAmount() + am);
             }
         });
         return this;
     }
+
     public List<Position> getAsList() {
         return positions;
     }
 
-    public Map<Position, Double> getAsPositionToAmountMap() {
-        return null;
+    public Map<Position, Double> getAsMap() {
+        return positionsAmount;
     }
 
 }

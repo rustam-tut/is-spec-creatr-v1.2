@@ -19,6 +19,8 @@ public final class PositionParserXLSColumnNames {
 
     static final String AMOUNT = "икол-во";
 
+    static final String SRC_UNIT = "иЕд. изм.";
+
     static final String PRICE = "рцена, руб. с ндс";
 
     final static Map<String, BiConsumer<Position, Double>> staticDoubleSetters = new HashMap<>();
@@ -33,6 +35,8 @@ public final class PositionParserXLSColumnNames {
         staticStringSetters.put(FULL_NAME, Position::setFullName);
         staticStringSetters.put(BRAND, Position::setBrand);
         staticStringSetters.put(ARTICLE, Position::setArticle);
+        //TODO почему не видит в таблице
+        staticStringSetters.put(SRC_UNIT, Position::setSrcUnit);
         colNames.addAll(staticDoubleSetters.keySet());
         colNames.addAll(staticStringSetters.keySet());
     }
