@@ -27,6 +27,8 @@ public class Position {
 
     private Double price;
 
+    private boolean isDoubtful;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

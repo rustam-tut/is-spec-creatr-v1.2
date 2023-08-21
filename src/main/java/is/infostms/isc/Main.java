@@ -22,11 +22,8 @@ public class Main {
         pp2.parse();
         List<Position> positions2 = pp2.getPositions();
         PositionsHandler ph = PositionsHandler.of(positions2).group();
-        Map<Position, Double> map = ph.getAsMap();
-
-        for (Map.Entry<Position, Double> pair: map.entrySet()) {
-            System.out.println(pair.getKey() + " -- " + pair.getValue());
-        }
+        Set<Position> positions = ph.getAsGroupedPositions();
+        positions.forEach(System.out::println);
     }
 
 }

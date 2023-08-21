@@ -3,16 +3,14 @@ package is.infostms.isc.parser;
 
 import is.infostms.isc.model.Position;
 import is.infostms.isc.model.PositionBuilder;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import is.infostms.isc.util.XLSUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
-import static is.infostms.isc.parser.PositionParserXLSColumnNames.*;
+import static is.infostms.isc.util.PositionStaticData.*;
 
 public class PositionParserXLS extends PositionParser{
 
@@ -52,14 +50,13 @@ public class PositionParserXLS extends PositionParser{
 
     private List<Position> parseSheet(int sheetNum) {
         Sheet sheet = workbook.getSheetAt(sheetNum);
-        Map<String, int[]> colNames = createColumnNameToNumMap(sheet);
-        System.out.println(colNames);
-        if (colNames == null) {
+        Map<String, int[]> tableHeads = XLSUtils.createColumnNameToNumMap(sheet, colNames);
+        if (tableHeads == null) {
             return null;
         }
         Map<Integer, BiConsumer<Position, Double>> doubleSetters = new HashMap<>();
         Map<Integer, BiConsumer<Position, String>> stringSetters = new HashMap<>();
-        for (Map.Entry<String, int[]> pair: colNames.entrySet()) {
+        for (Map.Entry<String, int[]> pair: tableHeads.entrySet()) {
             String colName = pair.getKey();
             if (staticDoubleSetters.containsKey(colName)) {
                 doubleSetters.put(pair.getValue()[1], staticDoubleSetters.get(colName));
@@ -67,36 +64,20 @@ public class PositionParserXLS extends PositionParser{
                 stringSetters.put(pair.getValue()[1], staticStringSetters.get(colName));
             }
         }
-        int realLastRowNum = getRealLastRowNum(sheet, colNames) + 1;
+        int realLastRowNum = XLSUtils.getRealLastRowNum(sheet, tableHeads) + 1;
         PositionBuilder positionBuilder = PositionBuilder.of(Position::new);
         List<Position> sheetPositions = new ArrayList<>();
-        for (int i = colNames.values().iterator().next()[0] + 1; i < realLastRowNum; i++) {
+        for (int i = tableHeads.values().iterator().next()[0] + 1; i < realLastRowNum; i++) {
             Row row = sheet.getRow(i);
             for (Map.Entry<Integer, BiConsumer<Position, Double>> pair: doubleSetters.entrySet()) {
                 Cell cell = row.getCell(pair.getKey(), Row.RETURN_BLANK_AS_NULL);
                 if (cell == null) continue;
-                Double value = null;
-                int cellType = cell.getCellType();
-                if (cellType == Cell.CELL_TYPE_STRING) {
-                    String preValue = cell.getStringCellValue().trim().replaceAll("[^0-9]", "");
-                    if (!preValue.isEmpty()) {
-                        value = Double.parseDouble(preValue);
-                    }
-                } else if (cellType == Cell.CELL_TYPE_NUMERIC || cellType == Cell.CELL_TYPE_FORMULA) {
-                    value = cell.getNumericCellValue();
-                }
-                positionBuilder.with(pair.getValue(), value);
+                positionBuilder.with(pair.getValue(), XLSUtils.getDoubleCellValue(cell));
             }
             for (Map.Entry<Integer, BiConsumer<Position, String>> pair: stringSetters.entrySet()) {
                 Cell cell = row.getCell(pair.getKey(), Row.RETURN_BLANK_AS_NULL);
                 if (cell == null) continue;
-                String value = null;
-                if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                    value = cell.getStringCellValue();
-                } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                    value = "'" + cell.getNumericCellValue();
-                }
-                positionBuilder.with(pair.getValue(), value);
+                positionBuilder.with(pair.getValue(), XLSUtils.getStringCellValue(cell));
             }
             Position position = positionBuilder.build();
             sheetPositions.add(position);
@@ -114,51 +95,8 @@ public class PositionParserXLS extends PositionParser{
         }
     }
 
-    private Map<String, int[]> createColumnNameToNumMap(Sheet sheet) {
-        Map<String, int[]> columnNameToNumMap = new HashMap<>();
-        for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            if (row == null) continue;
-            for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
-                Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
-                if (cell == null || cell.getCellType() != Cell.CELL_TYPE_STRING) continue;
-                String colName = cell.getStringCellValue().toLowerCase().trim().replaceAll("\\s{2,}", "\\s");
-                if (colNames.contains(colName)) {
-                    columnNameToNumMap.put(colName, new int[]{i, j});
-                }
-            }
-            if (columnNameToNumMap.size() >= 2) {
-                return columnNameToNumMap;
-            }
-        }
-        return null;
-    }
-
     private void initWorkbook() {
-        Workbook wb = null;
-        try {
-            wb = WorkbookFactory.create(sourceFile);
-        } catch (InvalidFormatException | IOException e) {
-            e.printStackTrace();
-        } finally {
-            workbook = wb;
-        }
+        workbook = XLSUtils.createWorkBook(sourceFile);
     }
 
-    private int getRealLastRowNum(Sheet sheet, Map<String, int[]> colNames){
-        int realLastNum = 0;
-        for (int[] coord: colNames.values()) {
-            int lastRowNum = -1;
-            for (int i = sheet.getLastRowNum(); i > coord[0] || i > realLastNum; i--) {
-                if (sheet.getRow(i).getCell(coord[1], Row.RETURN_BLANK_AS_NULL) != null) {
-                    lastRowNum = i;
-                    break;
-                }
-            }
-            if (lastRowNum > realLastNum) {
-                realLastNum = lastRowNum;
-            }
-        }
-        return realLastNum;
-    }
 }

@@ -2,9 +2,7 @@ package is.infostms.isc.handler;
 
 import is.infostms.isc.model.Position;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PositionsHandler {
 
@@ -21,10 +19,11 @@ public class PositionsHandler {
     }
 
     public PositionsHandler clean() {
+        positions.removeIf(pos -> pos.getFullName() == null);
         return this;
     }
     public PositionsHandler group() {
-        positionsAmount = new HashMap<>(positions.size(), 0.9f);
+        positionsAmount = new HashMap<>();
         positions.forEach(pos -> {
             Double am;
             if ((am = positionsAmount.get(pos)) == null) {
@@ -36,8 +35,14 @@ public class PositionsHandler {
         return this;
     }
 
-    public List<Position> getAsList() {
-        return positions;
+    public Set<Position> getAsGroupedPositions() {
+        Set<Position> groupedPositions = new HashSet<>();
+        for (Map.Entry<Position, Double> pair: positionsAmount.entrySet()) {
+            Position pos = pair.getKey();
+            pos.setSrcAmount(pair.getValue());
+            groupedPositions.add(pos);
+        }
+        return groupedPositions;
     }
 
     public Map<Position, Double> getAsMap() {
