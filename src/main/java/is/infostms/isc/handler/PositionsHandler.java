@@ -4,7 +4,7 @@ import is.infostms.isc.model.Position;
 
 import java.util.*;
 
-public class PositionsHandler {
+public final class PositionsHandler {
 
     private final List<Position> positions;
 
@@ -22,6 +22,7 @@ public class PositionsHandler {
         positions.removeIf(pos -> pos.getFullName() == null);
         return this;
     }
+
     public PositionsHandler group() {
         positionsAmount = new HashMap<>();
         positions.forEach(pos -> {
