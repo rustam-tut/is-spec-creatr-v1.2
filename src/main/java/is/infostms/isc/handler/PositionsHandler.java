@@ -19,7 +19,7 @@ public final class PositionsHandler {
     }
 
     public PositionsHandler clean() {
-        positions.removeIf(pos -> pos.getFullName() == null);
+        // todo
         return this;
     }
 

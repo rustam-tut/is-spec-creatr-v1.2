@@ -1,19 +1,7 @@
 package is.infostms.isc;
 
-import is.infostms.isc.handler.PositionsHandler;
 import is.infostms.isc.handler.brand.BrandPriceList;
 import is.infostms.isc.handler.brand.DKCPriceList;
-import is.infostms.isc.model.Position;
-import is.infostms.isc.parser.PositionParser;
-import is.infostms.isc.parser.PositionParserXLS;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 public class Main {
     private static final String fName = "C:\\Users\\Acer\\Desktop\\инфстмс\\for java\\01.08.23 Запрос КП 2324 Валеев.xlsx";
@@ -30,7 +18,7 @@ public class Main {
 //        positions.forEach(System.out::println);
 
         BrandPriceList brandPriceList = new DKCPriceList();
-        brandPriceList.createPriceListPositionsMap();
+        brandPriceList.createPriceListPositionsSet();
     }
 
 }

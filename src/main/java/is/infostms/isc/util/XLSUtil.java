@@ -19,7 +19,7 @@ public final class XLSUtil {
         try {
             workbook = WorkbookFactory.create(file);
         } catch (InvalidFormatException | IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("FATAL: no file");
         }
         return workbook;
     }
@@ -28,7 +28,8 @@ public final class XLSUtil {
         Map<String, Integer> columnNameToNumMap = new HashMap<>();
         for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
-            if (row == null) continue;
+            if (row == null)
+                continue;
             for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
                 Cell c = row.getCell(j);
                 Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
@@ -49,7 +50,8 @@ public final class XLSUtil {
         int startRowNum = -1;
         for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
-            if (row == null) continue;
+            if (row == null)
+                continue;
             int checkedCount = 0;
             for (int colNum: colNums) {
                 Cell cell = row.getCell(colNum, Row.RETURN_BLANK_AS_NULL);
@@ -82,7 +84,10 @@ public final class XLSUtil {
         return realLastNum;
     }
 
-    public static Double getDoubleCellValue(Cell cell) {
+    public static Double getCellValueAsDouble(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
         Double value = null;
         int type = cell.getCellType();
         if (type == CELL_TYPE_STRING) {
@@ -97,7 +102,10 @@ public final class XLSUtil {
         return value;
     }
 
-    public static String getStringCellValue(Cell cell) {
+    public static String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
         String value = null;
         int type = cell.getCellType();
         if (type == CELL_TYPE_STRING) {
@@ -108,30 +116,33 @@ public final class XLSUtil {
         return value;
     }
 
-    public static int getMaxNumericValuesColumnNum(Sheet sheet, int startRowNum, int lastRowNum) {
-        int maxNumericValuesColumnNum = -1;
+    public static int getMaxNumericValuesColNum(Sheet sheet, int startRowNum, int lastRowNum, int startColNum) {
+        Map<Integer, Integer> maxColNumsFreq = new HashMap<>();
         for (int i = startRowNum; i < lastRowNum; i += 5) {
             Row row = sheet.getRow(i);
-            if (row == null) continue;
-            double maxVal = -1.0;
+            if (row == null)
+                continue;
+            double maxVal = Double.MIN_VALUE;
             int maxNum = -1;
-            for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
+            for (int j = startColNum; j < row.getLastCellNum(); j++) {
                 Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
-                if (cell == null) continue;
-                if (cell.getCellType() == CELL_TYPE_NUMERIC || cell.getCellType() == CELL_TYPE_FORMULA) {
-                    double val = cell.getNumericCellValue();
-                    if (Double.compare(maxVal, val) < -1) {
-                        maxVal = val;
-                        maxNum = j;
-                    }
+                if (cell == null)
+                    continue;
+                Double val = getCellValueAsDouble(cell);
+                if (val == null)
+                    continue;
+                if (val > maxVal) {
+                    maxVal = val;
+                    maxNum = j;
                 }
             }
-            maxNumericValuesColumnNum = maxNum;
+            if (maxColNumsFreq.containsKey(maxNum)) {
+                maxColNumsFreq.put(maxNum, maxColNumsFreq.get(maxNum) + 1);
+            } else {
+                maxColNumsFreq.put(maxNum, 0);
+            }
         }
-        return maxNumericValuesColumnNum;
-    }
-
-    public static int getMaxNumericValuesColumnNum(Sheet sheet) {
-        return getMaxNumericValuesColumnNum(sheet, sheet.getFirstRowNum(), sheet.getLastRowNum());
+        return maxColNumsFreq.entrySet()
+                .stream().max((v1, v2) -> v1.getValue() > v2.getValue() ? 1 : -1).get().getKey();
     }
 }

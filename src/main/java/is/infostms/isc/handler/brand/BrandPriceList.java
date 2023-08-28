@@ -1,6 +1,9 @@
 package is.infostms.isc.handler.brand;
 
+import is.infostms.isc.model.PriceListPosition;
 import is.infostms.isc.util.XLSUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -23,53 +26,78 @@ public abstract class BrandPriceList {
     protected int sheetAmount;
 
     protected static class ColumnsOfSheet {
+        int sheetNum;
         Set<String> colNames;
         Set<Integer> colNums;
         int codeColNum;
         int articleColNum;
         int nameColNum;
         int unitColNum;
+        int amountUnitColNum;
         int maxPriceColNum;
 
-        ColumnsOfSheet(Set<String> notNumericColNames, int codeColNum, int articleColNum, int nameColNum, int unitColNum) {
+        ColumnsOfSheet(Set<String> notNumericColNames, int codeColNum, int articleColNum,
+                       int nameColNum, int unitColNum, int amountUnitColNum) {
             this.colNames = notNumericColNames;
             this.codeColNum = codeColNum;
             this.articleColNum = articleColNum;
             this.nameColNum = nameColNum;
             this.unitColNum = unitColNum;
+            this.amountUnitColNum = amountUnitColNum;
         }
 
         void initColNums() {
-            colNums = Stream.of(codeColNum, articleColNum, nameColNum, unitColNum)
+            colNums = Stream.of(codeColNum, articleColNum, nameColNum, unitColNum, amountUnitColNum)
                     .filter(v -> v >= 0).collect(Collectors.toSet());
-        }
-        void setMaxPriceColNum(int maxPriceColNum) {
-            this.maxPriceColNum = maxPriceColNum;
         }
     }
 
-    public void createPriceListPositionsMap() {
-        Map<String, PriceListPosition> plPositions = new HashMap<>();
+    public void createPriceListPositionsSet() {
+        Set<PriceListPosition> plPositions = new HashSet<>();
         Workbook workbook = XLSUtil.createWorkBook(getFile());
         for (int i = 0; i < sheetAmount; i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-            ColumnsOfSheet colsOfSheet= columnOfSheets[i];
-            Map<String, Integer> heads = XLSUtil.createColumnNameToNumMap(sheet, colsOfSheet.colNames);
-            int firstRowNum, lastRowNum;
-            if (heads != null) {
-                Set<Integer> colNums = new HashSet<>(heads.values());
-                firstRowNum = XLSUtil.getRealFirstRowNum(sheet, colNums);
-                lastRowNum = XLSUtil.getRealLastRowNum(sheet, colNums, firstRowNum);
-                colsOfSheet.maxPriceColNum = XLSUtil.getMaxNumericValuesColumnNum(sheet, firstRowNum, lastRowNum);
-            } else {
-                firstRowNum = XLSUtil.getRealFirstRowNum(sheet, colsOfSheet.colNums);
-                // TODO: 27.08.2023 продолжить 
+            ColumnsOfSheet colOfSheet = columnOfSheets[i];
+            Sheet sheet = workbook.getSheetAt(colOfSheet.sheetNum);
+            Map<String, Integer> heads = XLSUtil.createColumnNameToNumMap(sheet, colOfSheet.colNames);
+            Set<Integer> colNums = heads != null ? new HashSet<>(heads.values()) : colOfSheet.colNums;
+            int firstRowNum = XLSUtil.getRealFirstRowNum(sheet, colNums);
+            int lastRowNum = XLSUtil.getRealLastRowNum(sheet, colNums, firstRowNum);
+            colOfSheet.maxPriceColNum = XLSUtil.getMaxNumericValuesColNum(sheet, firstRowNum, lastRowNum,
+                    Collections.max(colNums) + 1);
+            colOfSheet.colNums.add(colOfSheet.maxPriceColNum);
+            colNums = colOfSheet.colNums;
+            Map<Integer, Cell> colNumCell = new HashMap<>();
+            colNums.forEach(v -> colNumCell.put(v, null));
+            for (int j = firstRowNum; j < lastRowNum; j++) {
+                Row row = sheet.getRow(j);
+                if (row == null) continue;
+                colNums.forEach(v -> colNumCell.put(v, row.getCell(v, Row.RETURN_BLANK_AS_NULL)));
+                PriceListPosition plPosition = new PriceListPosition();
+                if (colNumCell.containsKey(colOfSheet.codeColNum)) {
+                    plPosition.setCode(XLSUtil.getCellValueAsString(colNumCell.get(colOfSheet.codeColNum)));
+                }
+                if (colNumCell.containsKey(colOfSheet.articleColNum)) {
+                    plPosition.setArticle(XLSUtil.getCellValueAsString(colNumCell.get(colOfSheet.articleColNum)));
+                }
+                if (colNumCell.containsKey(colOfSheet.nameColNum)) {
+                    plPosition.setName(XLSUtil.getCellValueAsString(colNumCell.get(colOfSheet.nameColNum)));
+                }
+                if (colNumCell.containsKey(colOfSheet.unitColNum)) {
+                    plPosition.setUnit(XLSUtil.getCellValueAsString(colNumCell.get(colOfSheet.unitColNum)));
+                }
+                if (colNumCell.containsKey(colOfSheet.amountUnitColNum)) {
+                    plPosition.setAmountUnit(XLSUtil.getCellValueAsDouble(colNumCell.get(colOfSheet.amountUnitColNum)));
+                }
+                if (colNumCell.containsKey(colOfSheet.maxPriceColNum)) {
+                    plPosition.setMaxPrice(XLSUtil.getCellValueAsDouble(colNumCell.get(colOfSheet.maxPriceColNum)));
+                }
+                plPositions.add(plPosition);
             }
         }
        //return plPositions;
     }
 
-
+    // TODO: 28.08.2023 создать util класс для поиска файлов, аналогичный метод и для паттерна имени и для полного имени
     private File getFile() {
         File file = null;
         try {

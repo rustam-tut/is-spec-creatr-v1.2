@@ -76,12 +76,12 @@ public class PositionParserXLS extends PositionParser{
             for (Map.Entry<Integer, BiConsumer<Position, Double>> pair: doubleSetters.entrySet()) {
                 Cell cell = row.getCell(pair.getKey(), Row.RETURN_BLANK_AS_NULL);
                 if (cell == null) continue;
-                positionBuilder.with(pair.getValue(), XLSUtil.getDoubleCellValue(cell));
+                positionBuilder.with(pair.getValue(), XLSUtil.getCellValueAsDouble(cell));
             }
             for (Map.Entry<Integer, BiConsumer<Position, String>> pair: stringSetters.entrySet()) {
                 Cell cell = row.getCell(pair.getKey(), Row.RETURN_BLANK_AS_NULL);
                 if (cell == null) continue;
-                positionBuilder.with(pair.getValue(), XLSUtil.getStringCellValue(cell));
+                positionBuilder.with(pair.getValue(), XLSUtil.getCellValueAsString(cell));
             }
             Position position = positionBuilder.build();
             sheetPositions.add(position);
