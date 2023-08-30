@@ -2,13 +2,9 @@ package is.infostms.isc.handler.brand;
 
 import java.util.HashSet;
 
-public class DKCPriceList extends BrandPriceList {
+public class HyperlinePriceList extends BrandPriceList {
 
-    public DKCPriceList() {
-
-
-
-
+    public HyperlinePriceList() {
         fileNamePattern = "Прайс-лист от [0-3][0-9]\\.[0-1][0-9]\\.[0-9]{4}\\.xlsx*";
         sheetAmount = 2;
         columnOfSheets = new ColumnsOfSheet[sheetAmount];

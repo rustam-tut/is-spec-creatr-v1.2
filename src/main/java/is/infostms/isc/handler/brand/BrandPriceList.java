@@ -1,6 +1,7 @@
 package is.infostms.isc.handler.brand;
 
 import is.infostms.isc.model.PriceListPosition;
+import is.infostms.isc.util.PropertiesLoader;
 import is.infostms.isc.util.XLSUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,8 +17,9 @@ import java.util.stream.Stream;
 
 public abstract class BrandPriceList {
 
-    public static final String BASE_DIR = "C:\\Users\\Acer\\Desktop\\инфстмс\\for java\\prices\\"
+    public static final String BASE_DIR = PropertiesLoader.getString("priceList.baseDir")
             + new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+
 
     protected String fileNamePattern;
 
@@ -53,7 +55,7 @@ public abstract class BrandPriceList {
     }
 
     public void createPriceListPositionsSet() {
-        Set<PriceListPosition> plPositions = new HashSet<>();
+        HashMap<String, PriceListPosition> plPositions = new HashMap();
         Workbook workbook = XLSUtil.createWorkBook(getFile());
         for (int i = 0; i < sheetAmount; i++) {
             ColumnsOfSheet colOfSheet = columnOfSheets[i];
@@ -91,10 +93,10 @@ public abstract class BrandPriceList {
                 if (colNumCell.containsKey(colOfSheet.maxPriceColNum)) {
                     plPosition.setMaxPrice(XLSUtil.getCellValueAsDouble(colNumCell.get(colOfSheet.maxPriceColNum)));
                 }
-                plPositions.add(plPosition);
+                plPositions.put(plPosition.getArticle(), plPosition);
             }
         }
-       //return plPositions;
+        plPositions.forEach((key, value) -> System.out.println(key + " -- " + value));
     }
 
     // TODO: 28.08.2023 создать util класс для поиска файлов, аналогичный метод и для паттерна имени и для полного имени
