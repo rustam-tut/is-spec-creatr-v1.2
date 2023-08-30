@@ -15,38 +15,30 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static is.infostms.isc.util.PropertiesLoader.*;
+
 public abstract class BrandPriceList {
 
     public static final String BASE_DIR = PropertiesLoader.getString("priceList.baseDir")
-            + new SimpleDateFormat("dd.MM.yyyy").format(new Date());
-
+            + new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + "\\";
 
     protected String fileNamePattern;
 
-    protected ColumnsOfSheet[] columnOfSheets;
+    protected SheetPriceList[] sheetPriceLists;
 
     protected int sheetAmount;
 
-    protected static class ColumnsOfSheet {
+    protected static class SheetPriceList {
         int sheetNum;
-        Set<String> colNames;
-        Set<Integer> colNums;
         int codeColNum;
         int articleColNum;
         int nameColNum;
         int unitColNum;
         int amountUnitColNum;
+        int maxColNum;
         int maxPriceColNum;
-
-        ColumnsOfSheet(Set<String> notNumericColNames, int codeColNum, int articleColNum,
-                       int nameColNum, int unitColNum, int amountUnitColNum) {
-            this.colNames = notNumericColNames;
-            this.codeColNum = codeColNum;
-            this.articleColNum = articleColNum;
-            this.nameColNum = nameColNum;
-            this.unitColNum = unitColNum;
-            this.amountUnitColNum = amountUnitColNum;
-        }
+        Set<String> colNames;
+        Set<Integer> colNums;
 
         void initColNums() {
             colNums = Stream.of(codeColNum, articleColNum, nameColNum, unitColNum, amountUnitColNum)
@@ -55,10 +47,10 @@ public abstract class BrandPriceList {
     }
 
     public void createPriceListPositionsSet() {
-        HashMap<String, PriceListPosition> plPositions = new HashMap();
+        HashMap<String, PriceListPosition> plPositions = new HashMap<>();
         Workbook workbook = XLSUtil.createWorkBook(getFile());
         for (int i = 0; i < sheetAmount; i++) {
-            ColumnsOfSheet colOfSheet = columnOfSheets[i];
+            SheetPriceList colOfSheet = sheetPriceLists[i];
             Sheet sheet = workbook.getSheetAt(colOfSheet.sheetNum);
             Map<String, Integer> heads = XLSUtil.createColumnNameToNumMap(sheet, colOfSheet.colNames);
             Set<Integer> colNums = heads != null ? new HashSet<>(heads.values()) : colOfSheet.colNums;

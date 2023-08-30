@@ -15,7 +15,7 @@ public final class XLSUtil {
     private XLSUtil() {}
 
     public static Workbook createWorkBook(File file) {
-        Workbook workbook = null;
+        Workbook workbook;
         try {
             workbook = WorkbookFactory.create(file);
         } catch (InvalidFormatException | IOException e) {
@@ -31,7 +31,6 @@ public final class XLSUtil {
             if (row == null)
                 continue;
             for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
-                Cell c = row.getCell(j);
                 Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
                 if (cell == null || cell.getCellType() != Cell.CELL_TYPE_STRING) continue;
                 String colName = cell.getStringCellValue().toLowerCase().replaceAll("[^а-я]", "");
@@ -93,7 +92,7 @@ public final class XLSUtil {
         if (type == CELL_TYPE_STRING) {
             String strValue = cell.getStringCellValue()
                     .replaceAll("[^0-9\\.,]", "").replaceAll(",", ".");
-            if (!strValue.isEmpty()) {
+            if (!strValue.isEmpty() && !strValue.matches("(.*\\..*){2,}")) {
                 value = Double.parseDouble(strValue);
             }
         } else if (type == CELL_TYPE_NUMERIC || type == CELL_TYPE_FORMULA) {

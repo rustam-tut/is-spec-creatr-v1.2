@@ -25,7 +25,7 @@ public class PropertiesLoader {
         return Integer.parseInt(properties.getProperty(key));
     }
 
-    public static Set<String> getStrSet(String[] keys) {
+    public static Set<String> getStrSet(String... keys) {
         return Arrays.stream(keys).map(properties::getProperty).collect(Collectors.toSet());
     }
 

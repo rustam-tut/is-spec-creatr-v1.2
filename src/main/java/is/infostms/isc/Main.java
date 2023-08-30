@@ -7,12 +7,14 @@ import is.infostms.isc.model.Position;
 import is.infostms.isc.parser.PositionParser;
 import is.infostms.isc.parser.PositionParserXLS;
 import is.infostms.isc.util.PropertiesLoader;
+import is.infostms.isc.util.XLSUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -34,6 +36,7 @@ public class Main {
 
         BrandPriceList brandPriceList = new DKCPriceList();
         brandPriceList.createPriceListPositionsSet();
+
     }
 
 }
