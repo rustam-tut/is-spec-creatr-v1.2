@@ -1,4 +1,6 @@
-package is.infostms.isc.model;
+package is.infostms.isc.util;
+
+import is.infostms.isc.model.Position;
 
 import java.util.LinkedList;
 import java.util.List;

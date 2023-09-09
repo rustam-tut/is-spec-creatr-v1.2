@@ -1,28 +1,8 @@
 package is.infostms.isc.model;
 
-import lombok.*;
-
 import java.util.Objects;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class PriceListPosition {
-
-     String article;
-
-     String code;
-
-     String name;
-
-    // TODO: 28.08.2023 ввести энамку для штуки, упаковки, бухт и тд
-     String unit;
-
-     Double amountUnit;
-
-     Double maxPrice;
-
-     String supplyingDate;
+public class PriceListPosition extends Position {
 
     @Override
     public boolean equals(Object o) {
@@ -31,7 +11,7 @@ public class PriceListPosition {
         PriceListPosition that = (PriceListPosition) o;
         if (article == null && that.article == null) return true;
         if (article == null ^ that.article == null) return false;
-        return article.equals(that.article);
+        return  article.equals(that.article);
     }
 
     @Override
@@ -39,8 +19,4 @@ public class PriceListPosition {
         return Objects.hash(article);
     }
 
-    @Override
-    public String toString() {
-        return code + "\t" + name + "\t" + article + "\t" + unit + "\t" + amountUnit + "\t" + maxPrice;
-    }
 }

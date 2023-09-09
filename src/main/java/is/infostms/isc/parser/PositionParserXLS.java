@@ -2,7 +2,7 @@ package is.infostms.isc.parser;
 
 
 import is.infostms.isc.model.Position;
-import is.infostms.isc.model.PositionBuilder;
+import is.infostms.isc.util.PositionBuilder;
 import is.infostms.isc.util.XLSUtil;
 import org.apache.poi.ss.usermodel.*;
 
@@ -56,6 +56,7 @@ public class PositionParserXLS extends PositionParser{
         if (tableHeads == null) {
             return null;
         }
+        Set<Integer> colNums = new HashSet<>(tableHeads.values());
         Map<Integer, BiConsumer<Position, Double>> doubleSetters = new HashMap<>();
         Map<Integer, BiConsumer<Position, String>> stringSetters = new HashMap<>();
         for (Map.Entry<String, Integer> pair: tableHeads.entrySet()) {
@@ -66,7 +67,6 @@ public class PositionParserXLS extends PositionParser{
                 stringSetters.put(pair.getValue(), staticStringSetters.get(colName));
             }
         }
-        Set<Integer> colNums = new HashSet<>(tableHeads.values());
         int realFirstRowNum = XLSUtil.getRealFirstRowNum(sheet, colNums);
         int realLastRowNum = XLSUtil.getRealLastRowNum(sheet, colNums, realFirstRowNum);
         PositionBuilder positionBuilder = PositionBuilder.of(Position::new);
@@ -88,6 +88,7 @@ public class PositionParserXLS extends PositionParser{
         }
         return sheetPositions;
     }
+
 
     private void updateSheetNumsToParse() {
         if (PARSE_ENTIRE_FILE) {

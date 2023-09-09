@@ -13,17 +13,21 @@ import java.util.Objects;
 @ToString
 public class Position {
 
-    private String id;
+    private String code;
 
-    private String fullName;
+    protected String article;
+
+    private String name;
 
     private String brand;
 
-    private String article;
-
     private Double srcAmount;
 
-    private String srcUnit;
+    private String sourceUnit;
+
+    private String unit;
+
+    private Double amountUnit;
 
     private Double price;
 
@@ -33,12 +37,13 @@ public class Position {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position p = (Position) o;
-        return p.getArticle().equalsIgnoreCase(getArticle()) && p.fullName.equalsIgnoreCase(fullName)
-                && (p.srcUnit == null || p.srcUnit.equalsIgnoreCase(srcUnit));
+        boolean fn = p.name.equalsIgnoreCase(name);
+        if (article == null || p.article == null) return fn;
+        return p.article.equalsIgnoreCase(article) && fn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fullName, article, srcUnit);
+        return Objects.hash(name, article);
     }
 }

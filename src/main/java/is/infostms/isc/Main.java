@@ -1,22 +1,11 @@
 package is.infostms.isc;
 
-import is.infostms.isc.handler.PositionsHandler;
-import is.infostms.isc.handler.brand.BrandPriceList;
+import is.infostms.isc.handler.brand.AnlanPriceList;
+import is.infostms.isc.handler.brand.HyperlinePriceList;
+import is.infostms.isc.handler.brand.PriceList;
 import is.infostms.isc.handler.brand.DKCPriceList;
-import is.infostms.isc.model.Position;
-import is.infostms.isc.parser.PositionParser;
-import is.infostms.isc.parser.PositionParserXLS;
-import is.infostms.isc.util.PropertiesLoader;
-import is.infostms.isc.util.XLSUtil;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
 
 public class Main {
 
@@ -33,11 +22,13 @@ public class Main {
 //        PositionsHandler ph = PositionsHandler.of(positions2).group();
 //        Set<Position> positions = ph.getAsGroupedPositions();
 //        positions.forEach(System.out::println);
+//
+        PriceList dkcPriceList = new DKCPriceList();
+        PriceList anlanPriceList = new AnlanPriceList();
 
-        BrandPriceList brandPriceList = new DKCPriceList();
-        brandPriceList.createPriceListPositionsSet();
+        dkcPriceList.createPriceListPositionsSet();
 
     }
-
 }
+
 

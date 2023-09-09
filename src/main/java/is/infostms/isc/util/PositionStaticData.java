@@ -34,11 +34,13 @@ public final class PositionStaticData {
     static {
         staticDoubleSetters.put(AMOUNT, Position::setSrcAmount);
         staticDoubleSetters.put(PRICE, Position::setPrice);
-        staticStringSetters.put(FULL_NAME, Position::setFullName);
+        staticStringSetters.put(FULL_NAME, Position::setName);
         staticStringSetters.put(BRAND, Position::setBrand);
         staticStringSetters.put(ARTICLE, Position::setArticle);
-        staticStringSetters.put(SRC_UNIT, Position::setSrcUnit);
+        staticStringSetters.put(SRC_UNIT, Position::setSourceUnit);
         colNames.addAll(staticDoubleSetters.keySet());
         colNames.addAll(staticStringSetters.keySet());
     }
+
+
 }

@@ -92,7 +92,7 @@ public final class XLSUtil {
         if (type == CELL_TYPE_STRING) {
             String strValue = cell.getStringCellValue()
                     .replaceAll("[^0-9\\.,]", "").replaceAll(",", ".");
-            if (!strValue.isEmpty() && !strValue.matches("(.*\\..*){2,}")) {
+            if (!strValue.isEmpty() && !strValue.matches("(.*\\..*){2,}") && !strValue.matches("\\.+")) {
                 value = Double.parseDouble(strValue);
             }
         } else if (type == CELL_TYPE_NUMERIC || type == CELL_TYPE_FORMULA) {
@@ -115,7 +115,8 @@ public final class XLSUtil {
         return value;
     }
 
-    public static int getMaxNumericValuesColNum(Sheet sheet, int startRowNum, int lastRowNum, int startColNum) {
+    public static int getMaxNumericValuesColNum(Sheet sheet, int startRowNum, int lastRowNum,
+                                               List<Integer> colNumsToCheck) {
         Map<Integer, Integer> maxColNumsFreq = new HashMap<>();
         for (int i = startRowNum; i < lastRowNum; i += 5) {
             Row row = sheet.getRow(i);
@@ -123,8 +124,8 @@ public final class XLSUtil {
                 continue;
             double maxVal = Double.MIN_VALUE;
             int maxNum = -1;
-            for (int j = startColNum; j < row.getLastCellNum(); j++) {
-                Cell cell = row.getCell(j, Row.RETURN_BLANK_AS_NULL);
+            for (int k : colNumsToCheck) {
+                Cell cell = row.getCell(k, Row.RETURN_BLANK_AS_NULL);
                 if (cell == null)
                     continue;
                 Double val = getCellValueAsDouble(cell);
@@ -132,7 +133,7 @@ public final class XLSUtil {
                     continue;
                 if (val > maxVal) {
                     maxVal = val;
-                    maxNum = j;
+                    maxNum = k;
                 }
             }
             if (maxColNumsFreq.containsKey(maxNum)) {

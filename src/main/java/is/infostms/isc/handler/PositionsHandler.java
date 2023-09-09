@@ -46,6 +46,7 @@ public final class PositionsHandler {
         return groupedPositions;
     }
 
+
     public Map<Position, Double> getAsMap() {
         return positionsAmount;
     }
