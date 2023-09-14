@@ -31,15 +31,16 @@ public class Position {
 
     private Double price;
 
+    private String supplyingDate;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position p = (Position) o;
-        boolean fn = p.name.equalsIgnoreCase(name);
+        boolean fn = p.name.trim().equalsIgnoreCase(name.trim());
         if (article == null || p.article == null) return fn;
-        return p.article.equalsIgnoreCase(article) && fn;
+        return p.article.trim().equalsIgnoreCase(article.trim()) && fn;
     }
 
     @Override

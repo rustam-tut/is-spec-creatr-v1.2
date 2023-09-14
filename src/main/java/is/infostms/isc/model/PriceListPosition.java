@@ -11,7 +11,7 @@ public class PriceListPosition extends Position {
         PriceListPosition that = (PriceListPosition) o;
         if (article == null && that.article == null) return true;
         if (article == null ^ that.article == null) return false;
-        return  article.equals(that.article);
+        return  article.trim().equalsIgnoreCase(that.article.trim());
     }
 
     @Override

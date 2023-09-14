@@ -5,7 +5,6 @@ import is.infostms.isc.model.PriceListPosition;
 import is.infostms.isc.util.PositionBuilder;
 import is.infostms.isc.util.PropertiesLoader;
 import is.infostms.isc.util.XLSUtil;
-import javafx.geometry.Pos;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -31,6 +30,8 @@ public abstract class PriceList {
 
     protected int sheetAmount;
 
+    protected String brandName;
+
     protected static class SheetPriceList {
         int sheetNum = -1;
         int codeColNum = -1;
@@ -41,17 +42,19 @@ public abstract class PriceList {
         int amountUnitColNum = -1;
         int maxColNum = -1;
         int maxPriceColNum = -1;
+        int supplyingDateColNum = -1;
         Set<Integer> colNums;
 
         void initColNums() {
-            colNums = Stream.of(codeColNum, articleColNum, brandColNum, nameColNum, unitColNum, amountUnitColNum)
+            colNums = Stream.of(codeColNum, articleColNum, brandColNum, nameColNum, unitColNum, amountUnitColNum,
+                            supplyingDateColNum)
                     .filter(v -> v >= 0).collect(Collectors.toSet());
         }
 
     }
 
-    public void createPriceListPositionsSet() {
-        HashMap<String, PriceListPosition> plPositions = new HashMap<>();
+    public Map<ArticleBrand, PriceListPosition> createPriceListPositionsSet() {
+        HashMap<ArticleBrand, PriceListPosition> plPositions = new HashMap<>();
         Workbook workbook = XLSUtil.createWorkBook(getFile());
         for (int i = 0; i < sheetAmount; i++) {
             SheetPriceList sheetPriceList = sheetPriceLists[i];
@@ -59,7 +62,6 @@ public abstract class PriceList {
             Set<Integer> colNums = sheetPriceList.colNums;
             int firstRowNum = XLSUtil.getRealFirstRowNum(sheet, colNums);
             int lastRowNum = XLSUtil.getRealLastRowNum(sheet, colNums, firstRowNum);
-            System.out.println(sheetPriceList.colNums);
             List<Integer> numsForMaxColNum = new ArrayList<>();
             for (int j = 0; j < sheetPriceList.maxColNum; j++) {
                 if (!colNums.contains(j)) {
@@ -86,8 +88,8 @@ public abstract class PriceList {
             if (sheetPriceList.colNums.contains(sheetPriceList.amountUnitColNum)) {
                 dblSetters.put(sheetPriceList.amountUnitColNum, Position::setAmountUnit);
             }
-            if (sheetPriceList.colNums.contains(sheetPriceList.brandColNum)) {
-                strSetters.put(sheetPriceList.brandColNum, Position::setBrand);
+            if (sheetPriceList.colNums.contains(sheetPriceList.supplyingDateColNum)) {
+                strSetters.put(sheetPriceList.supplyingDateColNum, Position::setSupplyingDate);
             }
             dblSetters.put(sheetPriceList.maxPriceColNum, Position::setPrice);
             PositionBuilder positionBuilder = PositionBuilder.of(PriceListPosition::new);
@@ -102,14 +104,18 @@ public abstract class PriceList {
                     Cell cell = row.getCell(pair.getKey(), Row.RETURN_BLANK_AS_NULL);
                     positionBuilder.with(pair.getValue(), XLSUtil.getCellValueAsString(cell));
                 }
-
                 PriceListPosition plPosition = (PriceListPosition) positionBuilder.build();
-                plPositions.put(plPosition.getArticle(), plPosition);
+                ArticleBrand articleBrand;
+                String brName = sheetPriceList.brandColNum != -1
+                        ? XLSUtil.getCellValueAsString(row.getCell(sheetPriceList.brandColNum))
+                        : brandName;
+                if (brName != null && plPosition.getArticle() != null) {
+                    articleBrand = new ArticleBrand(plPosition.getArticle().toLowerCase(), brName.toLowerCase());
+                    plPositions.put(articleBrand, plPosition);
+                }
             }
-            System.out.println(sheetPriceList.maxPriceColNum);
         }
-        //plPositions.forEach((key, value) -> System.out.println(key + " ----  " + value.getBrand()  + "---" + value.getPrice()));
-        System.out.println(plPositions.size());
+        return plPositions;
     }
 
     // TODO: 28.08.2023 создать util класс

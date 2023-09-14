@@ -1,10 +1,12 @@
 package is.infostms.isc.handler.brand;
 
+
 import static is.infostms.isc.util.PropertiesLoader.*;
 
 public class HyperlinePriceList extends PriceList {
 
     public HyperlinePriceList() {
+        brandName = "Hyperline";
         fileNamePattern = getString("hprln.fileName.regexp");
         sheetAmount = getInt("hprln.sheet.amount");
         SheetPriceList[] sheetPLs = new SheetPriceList[sheetAmount];
