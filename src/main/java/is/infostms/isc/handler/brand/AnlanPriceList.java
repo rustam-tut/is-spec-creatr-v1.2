@@ -19,7 +19,7 @@ public class AnlanPriceList extends PriceList {
         sheetPL0.articleColNum = getInt("anln.sheet0.article");
         sheetPL0.nameColNum = getInt("anln.sheet0.name");
         sheetPL0.brandColNum = getInt("anln.sheet0.brand");
-
+        sheetPL0.supplyingDateColNum = getInt("anln.sheet0.supdate");
         sheetPL0.initColNums();
         sheetPLs[0] = sheetPL0;
         sheetPriceLists = sheetPLs;

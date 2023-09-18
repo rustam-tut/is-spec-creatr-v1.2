@@ -22,12 +22,12 @@ public class ArticleBrand {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ArticleBrand that = (ArticleBrand) o;
-        return ((article == null) || (brandName == null)) ||
-        (article.equalsIgnoreCase(that.article) && brandName.equalsIgnoreCase(that.brandName));
+        if (that.article == null || that.brandName == null) return false;
+        return article.equalsIgnoreCase(that.article) && brandName.equalsIgnoreCase(that.brandName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(article, brandName);
+        return Objects.hash(article);
     }
 }

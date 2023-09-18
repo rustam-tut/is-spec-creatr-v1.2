@@ -110,7 +110,8 @@ public abstract class PriceList {
                         ? XLSUtil.getCellValueAsString(row.getCell(sheetPriceList.brandColNum))
                         : brandName;
                 if (brName != null && plPosition.getArticle() != null) {
-                    articleBrand = new ArticleBrand(plPosition.getArticle().toLowerCase(), brName.toLowerCase());
+                    articleBrand = new ArticleBrand(plPosition.getArticle(), brName);
+                    plPosition.setBrand(brName);
                     plPositions.put(articleBrand, plPosition);
                 }
             }
@@ -118,7 +119,7 @@ public abstract class PriceList {
         return plPositions;
     }
 
-    // TODO: 28.08.2023 создать util класс
+    // TODO: 28.08.2023 создать util класс для обработки File'ов
     private File getFile() {
         File file = null;
         try {

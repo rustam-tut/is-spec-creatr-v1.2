@@ -12,7 +12,7 @@ public enum Vendor {
 
     ABN("stub"),
 
-    Anlan("cabeus", "цмо");
+    Anlan("cabeus", "цмо", "d-link", "cablexpert", "rexant");
 
     private final Set<String> brands;
 

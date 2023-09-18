@@ -1,9 +1,12 @@
 package is.infostms.isc.util;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -22,6 +25,14 @@ public final class XLSUtil {
             throw new RuntimeException("FATAL: no file");
         }
         return workbook;
+    }
+
+    public static void createXLSXFile(Workbook workbook, File file) {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            workbook.write(fos);
+        } catch (IOException ignored) {
+
+        }
     }
 
     public static Map<String, Integer> createColumnNameToNumMap(Sheet sheet, Set<String> colNames) {

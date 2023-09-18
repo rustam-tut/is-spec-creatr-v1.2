@@ -4,6 +4,7 @@ package is.infostms.isc.parser;
 import is.infostms.isc.model.Position;
 import is.infostms.isc.util.PositionBuilder;
 import is.infostms.isc.util.XLSUtil;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import static is.infostms.isc.util.PositionStaticData.*;
 
 public class PositionParserXLS extends PositionParser{
 
+    @Getter
     private Workbook workbook;
 
     private final TreeSet<Integer> sheetNumsToParse = new TreeSet<>();
@@ -37,7 +39,7 @@ public class PositionParserXLS extends PositionParser{
 
     @Override
     public void parse() {
-        initWorkbook();
+        workbook = XLSUtil.createWorkBook(sourceFile);
         updateSheetNumsToParse();
         for (int sheetNum: sheetNumsToParse) {
             List<Position> positionsFromSheet = parseSheet(sheetNum);
@@ -100,10 +102,6 @@ public class PositionParserXLS extends PositionParser{
         }
     }
 
-    private void initWorkbook() {
-        workbook = XLSUtil.createWorkBook(sourceFile);
-    }
-
     private void closeWorkbook() {
         try {
             workbook.close();
@@ -112,4 +110,11 @@ public class PositionParserXLS extends PositionParser{
         }
     }
 
+    public List<Sheet> getSheets() {
+        List<Sheet> sheets = new ArrayList<>();
+        for (int i : sheetNumsToParse) {
+            sheets.add(workbook.getSheetAt(i));
+        }
+        return sheets;
+    }
 }

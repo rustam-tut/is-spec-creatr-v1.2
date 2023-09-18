@@ -5,7 +5,9 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PropertiesLoader {
+public final class PropertiesLoader {
+
+    private PropertiesLoader() {}
 
     private final static Properties properties;
 

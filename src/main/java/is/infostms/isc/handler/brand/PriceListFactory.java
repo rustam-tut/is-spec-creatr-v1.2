@@ -22,7 +22,6 @@ public class PriceListFactory {
                 priceListToPositions.put(getPriceList(vendor), getPositionsByVendorBrands(vendorBrands));
             }
         }
-        priceListToPositions.forEach((key, value) -> System.out.println(key.getClass().getName() + " --- " + value.size()));
         return priceListToPositions;
     }
 
