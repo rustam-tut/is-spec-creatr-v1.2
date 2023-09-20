@@ -40,9 +40,10 @@ public abstract class PriceList {
         int nameColNum = -1;
         int unitColNum = -1;
         int amountUnitColNum = -1;
-        int maxColNum = -1;
         int maxPriceColNum = -1;
         int supplyingDateColNum = -1;
+        int startPriceAreaNum = -900;
+        int endPriceAreaNum = -900;
         Set<Integer> colNums;
 
         void initColNums() {
@@ -63,10 +64,8 @@ public abstract class PriceList {
             int firstRowNum = XLSUtil.getRealFirstRowNum(sheet, colNums);
             int lastRowNum = XLSUtil.getRealLastRowNum(sheet, colNums, firstRowNum);
             List<Integer> numsForMaxColNum = new ArrayList<>();
-            for (int j = 0; j < sheetPriceList.maxColNum; j++) {
-                if (!colNums.contains(j)) {
-                    numsForMaxColNum.add(j);
-                }
+            for (int j = sheetPriceList.startPriceAreaNum; j < sheetPriceList.endPriceAreaNum + 1; j++) {
+                numsForMaxColNum.add(j);
             }
             sheetPriceList.maxPriceColNum = XLSUtil.getMaxNumericValuesColNum(sheet, firstRowNum, lastRowNum,
                     numsForMaxColNum);

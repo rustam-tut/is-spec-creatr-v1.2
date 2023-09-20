@@ -43,12 +43,10 @@ public final class PositionsHandler {
         PriceListFactory priceListFactory = new PriceListFactory(positionsSet);
         Set<String> brands = positionsSet.stream().map(p -> p.getBrand().toLowerCase())
                 .collect(Collectors.toSet());
-        System.out.println(brands);
         Map<PriceList, Set<Position>> priceListToPositions = priceListFactory.createPriceListToPositions(brands);
         for (Map.Entry<PriceList, Set<Position>> pair: priceListToPositions.entrySet()) {
             PriceList priceList = pair.getKey();
             Set<Position> positions = pair.getValue();
-            System.out.println(positions.size() + " --- " + priceList.getClass().getName());
             Map<ArticleBrand, PriceListPosition> plPositions = priceList.createPriceListPositionsSet();
             for (Position position: positions) {
                 if (position.getArticle() != null && position.getBrand() != null) {
@@ -64,8 +62,8 @@ public final class PositionsHandler {
                         position.setAmountUnit(amountUnit);
                         position.setSupplyingDate(supplyingDate);
                     }
-                    System.out.println(position);
                 }
+
             }
         }
         return this;

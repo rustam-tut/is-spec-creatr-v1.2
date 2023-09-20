@@ -5,7 +5,6 @@ import is.infostms.isc.util.XLSUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-import javax.print.DocFlavor;
 import java.io.File;
 import java.util.*;
 
@@ -66,10 +65,10 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
 
     @Override
     public void createQuote() {
-        sheet = workbook.createSheet();
+        sheet = workbook.createSheet("Общий");
         initTable();
         int rowNum = 2;
-        int ind = 0;
+        int ind = 1;
         Map<Integer, Double> doubleValues = new HashMap<>();
         Map<Integer, String> stringValues = new HashMap<>();
 
@@ -79,20 +78,23 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
             stringValues.put(1, position.getName());
             stringValues.put(2, position.getArticle());
             stringValues.put(3, position.getBrand());
-            stringValues.put(8, position.getUnit());
+            stringValues.put(8, position.getSourceUnit());
+            stringValues.put(10, position.getUnit());
             stringValues.put(18, position.getSupplyingDate());
+            Row row = sheet.getRow(rowNum);
             for (Map.Entry<Integer, Double> pair: doubleValues.entrySet()) {
                 Double val = pair.getValue();
                 if (val != null) {
-                    sheet.getRow(rowNum).getCell(pair.getKey()).setCellValue(val);
+                    row.getCell(pair.getKey()).setCellValue(val);
                 }
             }
             for (Map.Entry<Integer, String> pair: stringValues.entrySet()) {
                 String val = pair.getValue();
                 if (val != null) {
-                    sheet.getRow(rowNum).getCell(pair.getKey()).setCellValue(val);
+                    row.getCell(pair.getKey()).setCellValue(val);
                 }
             }
+            row.getCell(0).setCellValue(ind++);
             rowNum++;
         }
         XLSUtil.createXLSXFile(workbook, new File(file.getAbsolutePath()
@@ -151,7 +153,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
         for (int i = 11; i < 19; i++) {
             sheet.setColumnWidth(i, 4200);
         }
-        CellStyle cellStyle0 = generateStyleBorder(BorderStyle.THIN.ordinal(),
+        CellStyle cellStyle0 = generateStyle(BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
@@ -163,7 +165,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
             if ((c = row0.getCell(i)) == null) continue;
             c.setCellStyle(cellStyle0);
         }
-        CellStyle cs1 = generateStyleBorder(BorderStyle.THIN.ordinal(),
+        CellStyle cs1 = generateStyle(BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.MEDIUM.ordinal(),
@@ -174,7 +176,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
             if ((c = row1.getCell(i)) == null) continue;
             c.setCellStyle(cs1);
         }
-        CellStyle cs2 = generateStyleBorder(BorderStyle.MEDIUM.ordinal(),
+        CellStyle cs2 = generateStyle(BorderStyle.MEDIUM.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.MEDIUM.ordinal(),
@@ -182,7 +184,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
                 true);
         row1.getCell(row1.getLastCellNum() - 1).setCellStyle(cs2);
         int tableSizeLastNum = positions.size() + 2;
-        CellStyle csInTbl = generateStyleBorder(BorderStyle.THIN.ordinal(),
+        CellStyle csInTbl = generateStyle(BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
@@ -195,7 +197,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
                 c.setCellStyle(csInTbl);
             }
         }
-        CellStyle csRght = generateStyleBorder(BorderStyle.MEDIUM.ordinal(),
+        CellStyle csRght = generateStyle(BorderStyle.MEDIUM.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
@@ -206,7 +208,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
             if (r == null) continue;
             r.getCell(18).setCellStyle(csRght);
         }
-        CellStyle csBtm = generateStyleBorder(BorderStyle.THIN.ordinal(),
+        CellStyle csBtm = generateStyle(BorderStyle.THIN.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.MEDIUM.ordinal(),
                 BorderStyle.THIN.ordinal(),
@@ -216,7 +218,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
         for (int i = 0; i < TABLE_COLUMN_NUMBER; i++) {
             row.getCell(i).setCellStyle(csBtm);
         }
-        CellStyle csLast = generateStyleBorder(BorderStyle.MEDIUM.ordinal(),
+        CellStyle csLast = generateStyle(BorderStyle.MEDIUM.ordinal(),
                 BorderStyle.THIN.ordinal(),
                 BorderStyle.MEDIUM.ordinal(),
                 BorderStyle.THIN.ordinal(),
@@ -247,7 +249,7 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
             r.getCell(14).setCellFormula(String.format(OUR_PRICE_FORMULA, trueI, trueI));
             r.getCell(16).setCellFormula(String.format(TENDER_PRICE_FORMULA, trueI, trueI));
         }
-        CellStyle csSum = generateStyleBorder(BorderStyle.NONE.ordinal(),
+        CellStyle csSum = generateStyle(BorderStyle.NONE.ordinal(),
                 BorderStyle.NONE.ordinal(),
                 BorderStyle.NONE.ordinal(),
                 BorderStyle.MEDIUM.ordinal(),
@@ -255,19 +257,22 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
                 false);
         csSum.setDataFormat(rubFormatCode);
         Row lRow = sheet.createRow(tableSizeLastNum);
-        Cell c1 = lRow.createCell(12);
-        Cell c2 = lRow.createCell(14);
-        Cell c3 = lRow.createCell(16);
-        c1.setCellStyle(csSum);
-        c2.setCellStyle(csSum);
-        c3.setCellStyle(csSum);
-        c1.setCellFormula(String.format(PRICE_SUM_FORMULA, 3, tableSizeLastNum));
-        c2.setCellFormula(String.format(OUR_PRICE_SUM_FORMULA, 3, tableSizeLastNum));
-        c3.setCellFormula(String.format(TENDER_PRICE_SUM_FORMULA, 3, tableSizeLastNum));
+        Cell cl1 = lRow.createCell(12);
+        Cell cl2 = lRow.createCell(14);
+        Cell cl3 = lRow.createCell(16);
+        cl1.setCellStyle(csSum);
+        cl2.setCellStyle(csSum);
+        cl3.setCellStyle(csSum);
+        cl1.setCellFormula(String.format(PRICE_SUM_FORMULA, 3, tableSizeLastNum));
+        cl2.setCellFormula(String.format(OUR_PRICE_SUM_FORMULA, 3, tableSizeLastNum));
+        cl3.setCellFormula(String.format(TENDER_PRICE_SUM_FORMULA, 3, tableSizeLastNum));
+        sheet.setColumnHidden(4, true);
+        sheet.setColumnHidden(5, true);
+        sheet.setColumnHidden(6, true);
     }
 
-    private CellStyle generateStyleBorder(int bRight, int bLeft, int bBottom, int bTop, boolean isBold,
-                                          boolean isImCentre) {
+    private CellStyle generateStyle(int bRight, int bLeft, int bBottom, int bTop, boolean isBold,
+                                    boolean isImCentre) {
         CellStyle cellStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
         font.setFontName("Calibri");
@@ -285,8 +290,8 @@ public class PositionQuoteXLSXCreator extends PositionsQuoteCreator {
     }
 
     private CellStyle getStyleCopy(CellStyle toCopy) {
-        return generateStyleBorder(
+        return generateStyle(
                 toCopy.getBorderRight(), toCopy.getBorderLeft(), toCopy.getBorderBottom(), toCopy.getBorderTop(),
-                false, toCopy.getAlignment() == CellStyle.ALIGN_CENTER);
+                toCopy.getFontIndex() == 17, toCopy.getAlignment() == CellStyle.ALIGN_CENTER);
     }
 }

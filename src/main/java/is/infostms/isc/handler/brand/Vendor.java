@@ -8,11 +8,15 @@ public enum Vendor {
 
     DKC("dkc"),
 
-    Hyperline("hyperline"),
+    //Hyperline("hyperline"),
 
-    ABN("stub"),
+    ABN("hyperline", "rexant", "abb", "экопласт", "aten", "skynet", "wrline"),
 
-    Anlan("cabeus", "цмо", "d-link", "cablexpert", "rexant");
+    Anlan("cabeus", "цмо", "d-link", "cablexpert" ,"алюр", "квт"),
+
+    IEK("iek", "itk");
+
+    //Eurolan("eurolan");
 
     private final Set<String> brands;
 

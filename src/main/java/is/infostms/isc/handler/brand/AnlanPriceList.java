@@ -13,13 +13,14 @@ public class AnlanPriceList extends PriceList {
         SheetPriceList[] sheetPLs = new SheetPriceList[sheetAmount];
 
         SheetPriceList sheetPL0 = new SheetPriceList();
-        sheetPL0.maxColNum = getInt("anln.sheet0.maxColNum");
         sheetPL0.sheetNum = getInt("anln.sheet0.num");
         sheetPL0.codeColNum = getInt("anln.sheet0.code");
         sheetPL0.articleColNum = getInt("anln.sheet0.article");
         sheetPL0.nameColNum = getInt("anln.sheet0.name");
         sheetPL0.brandColNum = getInt("anln.sheet0.brand");
         sheetPL0.supplyingDateColNum = getInt("anln.sheet0.supdate");
+        sheetPL0.startPriceAreaNum = getInt("anln.sheet0.startPriceArea");
+        sheetPL0.endPriceAreaNum = getInt("anln.sheet0.endPriceArea");
         sheetPL0.initColNums();
         sheetPLs[0] = sheetPL0;
         sheetPriceLists = sheetPLs;

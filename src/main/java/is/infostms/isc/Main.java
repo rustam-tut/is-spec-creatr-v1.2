@@ -37,12 +37,11 @@ public class Main {
         PositionParserXLS pp2 = new PositionParserXLS(file, true);
         pp2.parse();
         List<Position> positions2 = pp2.getPositions();
-        System.out.println(positions2);
-        PositionsHandler ph = PositionsHandler.of(positions2)
-                .createPositionToSumAmountMap()
-                .mapToSet()
-                .putPriceListPrices();
-        PositionsQuoteCreator positionsQuoteCreator = new PositionQuoteXLSXCreator(file, positions2);
+        PositionsHandler ph = PositionsHandler.of(positions2);
+        ph.createPositionToSumAmountMap().mapToSet();
+        ph.putPriceListPrices();
+        Set<Position> poses = ph.getAsSet();
+        PositionsQuoteCreator positionsQuoteCreator = new PositionQuoteXLSXCreator(file, poses);
         positionsQuoteCreator.createQuote();
     }
 }

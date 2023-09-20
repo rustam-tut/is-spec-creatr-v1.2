@@ -18,6 +18,7 @@ public class PriceListFactory {
         Map<PriceList, Set<Position>> priceListToPositions = new HashMap<>();
         for (Vendor vendor: Vendor.values()) {
             Set<String> vendorBrands = brands.stream().filter(vendor::ofThisPriceList).collect(Collectors.toSet());
+            System.out.println(vendorBrands);
             if (!vendorBrands.isEmpty()) {
                 priceListToPositions.put(getPriceList(vendor), getPositionsByVendorBrands(vendorBrands));
             }
@@ -27,14 +28,18 @@ public class PriceListFactory {
 
     private PriceList getPriceList(Vendor vendor) {
         switch (vendor) {
-            case ABN:
-                return new ABNPriceList();
             case DKC:
                 return new DKCPriceList();
             case Anlan:
                 return new AnlanPriceList();
-            case Hyperline:
-                return new HyperlinePriceList();
+            //case Hyperline:
+                //return new HyperlinePriceList();
+            case ABN:
+                return new ABNPriceList();
+            case IEK:
+                return new IEKPriceList();
+            //case Eurolan:
+               // return new EurolanPriceList();
             default:
                 return null;
         }
